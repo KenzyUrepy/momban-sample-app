@@ -1,12 +1,22 @@
 import { Button, Flex, Text } from "@chakra-ui/react";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { useContext } from "react";
+import { parseCookies } from "nookies";
+import { useContext, useEffect } from "react";
 
 import { UserContext } from "../context/userProvider";
 
 export default function Dashboard() {
+  const cookies = parseCookies(null, undefined);
+  console.log(cookies);
   const { user, setUser } = useContext(UserContext);
+
+  useEffect(() => {
+    async function getMe() {
+      setUser(await (await fetch("/api/auth/me")).json());
+    }
+    getMe();
+  }, [setUser]);
 
   const router = useRouter();
 
@@ -14,8 +24,8 @@ export default function Dashboard() {
     router.push("/api/auth/logout");
   };
 
-  const handleGetUser = () => {
-    setUser({ id: 1, name: "ayamew" });
+  const handleGetUser = async () => {
+    setUser(await (await fetch("/api/auth/me")).json());
   };
 
   return (
@@ -41,7 +51,7 @@ export default function Dashboard() {
           <Button colorScheme="blue" mt="32px" onClick={handleGetUser}>
             Get User
           </Button>
-          <Text mt="32px">User is {JSON.stringify(user)}</Text>
+          {user && <Text mt="32px">User is {JSON.stringify(user?.name)}</Text>}
         </Flex>
       </>
     </>

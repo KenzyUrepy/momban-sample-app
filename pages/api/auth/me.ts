@@ -13,5 +13,4 @@ export default async function me(req: NextApiRequest, res: NextApiResponse) {
   ).json();
 
   res.json(me);
-  return me;
 }

@@ -1,8 +1,9 @@
 import { createContext, useState } from "react";
 
 type UserData = {
-  id: number | null;
-  name: string | null;
+  email: string;
+  name: string;
+  sub: string;
 };
 
 type UserContextType = {

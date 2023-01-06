@@ -28,7 +28,7 @@ export default async function logout(req: NextApiRequest, res: NextApiResponse) 
       path: "/",
       secure: true,
     }),
-    serialize("session", "expired", {
+    serialize("_session", "expired", {
       domain: ".momban.net",
       httpOnly: true,
       maxAge: 0,

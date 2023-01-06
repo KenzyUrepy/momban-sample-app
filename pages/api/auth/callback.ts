@@ -38,8 +38,7 @@ export default async function callback(req: NextApiRequest, res: NextApiResponse
     `${process.env.MOMBAN_CLIENT_ID}:${process.env.MOMBAN_CLIENT_SECRET}`,
   ).toString("base64");
   const cookies = parseCookies({ req });
-
-  const { issuer, state } = JSON.parse(Buffer.from(cookies.session, "base64").toString());
+  const { issuer, state } = JSON.parse(cookies["_session"]);
 
   if (!(state.length === 0)) {
     if (req.query.state !== state) {
@@ -58,7 +57,6 @@ export default async function callback(req: NextApiRequest, res: NextApiResponse
         },
       )
     ).json()) as getTokenRes;
-    console.log(tokens);
     if (!isIDTokenVaild(tokens, issuer)) {
       throw new Error("認証エラーが発生しました");
     }
@@ -78,19 +76,17 @@ export default async function callback(req: NextApiRequest, res: NextApiResponse
         serialize("access_token", tokens.access_token, {
           domain: ".momban.net",
           expires: new Date(date + 60 * 60 * 1 * 1000),
-          httpOnly: true,
           path: "/",
           secure: true,
         }),
         serialize("refresh_token", tokens.refresh_token, {
           domain: ".momban.net",
           expires: new Date(date + 60 * 60 * 24 * 90 * 1000),
-          httpOnly: true,
           path: "/",
           secure: true,
         }),
         serialize(
-          "session",
+          "_session",
           JSON.stringify(Buffer.from(JSON.stringify(userInfo)).toString("base64")),
           {
             domain: ".momban.net",
